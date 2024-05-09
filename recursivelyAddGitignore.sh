@@ -28,9 +28,11 @@ create_gitignore() {
     if [ -e "$dir/.gitignore" ]; then
 		local test=test
         echo ".gitignore file already exists in $dir"
-    else
+		filesAlreadyThere=$(($filesAlreadyThere+1))
+	else
         touch "$dir/.gitignore"
         echo ".gitignore file created in $dir"
+		filesCreated=$(($filesCreated+1))
     fi
 }
 
@@ -52,6 +54,9 @@ traverse_directories() {
 
 # Get script parent directory
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+filesAlreadyThere=0
+filesCreated=0
+
 echo "Will start creating .gitignore files within the following folder and all its subfolders: \"$SCRIPT_DIR\""
 echo "Do you want to continue? (y/n)"
 read answer
@@ -59,8 +64,12 @@ read answer
 if [ "$answer" == "y" ]; then
     # Start traversing from the current directory
 	traverse_directories "$SCRIPT_DIR"
+	echo "Created $filesCreated files and $filesAlreadyThere files were already created."
 elif [ "$answer" == "n" ]; then
     echo "Aborted."
 else
     echo "Invalid input, aborted."
 fi
+
+echo "Press any key to continue..."
+read answer
